@@ -75,6 +75,17 @@ input:focus {
   outline: none;
 }
 
+header {
+  display: flex;
+  margin: 20px;
+  align-items: center;
+  flex-direction: column;
+}
+
+.line{
+  display: none;
+}
+
 .page-wrap {
   max-width: 960px;
   padding: 0 20px;
@@ -204,5 +215,12 @@ input:focus {
   }
   .commentary-container {
     margin-top: 0px;
+  }
+  .line{
+    display: inline;
+    height: 455px !important;
+    width: 1px !important;
+    background-color: #b9b9b9 !important;
+    border-color: white !important;
   }
 }
