@@ -3,9 +3,9 @@ const { IamTokenManager } = require("ibm-watson/auth");
 require("dotenv").config();
 
 module.exports = {
-  async show(req, res) {
+  async find(req, res) {
     const { comment_id } = req.params;
-    const comment = Comment.findByPk(comment_id);
+    const comment = await Comment.findByPk(comment_id);
 
     return res.json(comment);
   },
@@ -57,19 +57,19 @@ module.exports = {
 
   async update(req, res) {
     const { comment_id } = req.params;
-    const { comment } = req.body;
+    const { comment, color1, color2, font_color } = req.body;
 
     if (comment == "") {
       return res.status(400).json({ error: "Digite um comentário" });
     }
-
+    
     const commented = await Comment.findByPk(comment_id);
 
     if (!commented) {
       return res.status(404).json({ error: "Esse comentário não existe :(" });
     }
 
-    const update = await commented.update({ comment });
+    const update = await commented.update({ comment, color1, color2, font_color });
 
     return res
       .status(200)
