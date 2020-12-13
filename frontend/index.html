@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./assets/css/styles.css" />
+    <title>Smarkio Voice</title>
+  </head>
+  <body>
+    <section class="page-wrap">
+      <header><br /></header>
+      <div class="comment-container">
+        <div class="comment-box">
+          <div class="comment-box-container">
+            <label>Comentário</label>
+            <textarea id="comment"></textarea>
+            <label>Cor de fundo</label>
+            <input id="firstColor" value="#FFFFFF" data-jscolor="" />
+            <label>Cor de fundo(gradient)</label>
+            <input id="secondColor" data-jscolor="" />
+            <label>Fonte</label>
+            <input id="fontColor" data-jscolor="" />
+          </div>
+          <span class="comment-button">Comentar</span>
+          <label>Preview</label>
+          <div class="commentary-container-ex">
+            <div class="commentary-ex">
+              <div class="commentary-content-ex">
+                <p class="text-wrap-ex"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="commentary-container">
+
+        </div>
+      </div>
+    </section>
+    <audio controls style="display: none;">
+        <source id="source" src="" type="audio/mpeg">
+    </audio>
+
+    <script src="./assets/js/jscolor.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="./assets/js/watson-speech.js"></script>
+    <script src="./assets/js/main.js"></script>
+    <script></script>
+  </body>
+</html>
