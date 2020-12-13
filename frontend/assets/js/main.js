@@ -34,17 +34,6 @@ $(document).ready(function () {
   });
 });
 
-const createElement = ({ id, comment, color1, color2, font_color }) => {
-  $(".commentary-container").find(".nothing").hide();
-  $(".commentary-container").append(
-    `<div class="commentary" id="${id}"><div class="commentary-content" style="background-image: linear-gradient(270deg, ${color1} 0%, ${color2} 100%"><p class="text-wrap" style="color: ${font_color}">${comment}</p></div><div class="actions"><img class="sound" src="./assets/img/sound.svg"><img class="edit" src="./assets/img/edit.svg"><img class="delete" src="./assets/img/delete.svg"></div></div>`
-  );
-};
-
-const editElement = ({id, comment, color1, color2, font_color}) => {
-  $(`#${editingId}`).replaceWith(`<div class="commentary" id="${id}"><div class="commentary-content" style="background-image: linear-gradient(270deg, ${color1} 0%, ${color2} 100%"><p class="text-wrap" style="color: ${font_color}">${comment}</p></div><div class="actions"><img class="sound" src="./assets/img/sound.svg"><img class="edit" src="./assets/img/edit.svg"><img class="delete" src="./assets/img/delete.svg"></div></div>`)
-}
-
 $("#comment").on("keyup", () => {
   $(".text-wrap-ex").html(this.comment.value);
 });
@@ -57,7 +46,20 @@ $("#firstColor, #secondColor, #fontColor").bind("change paste keyup", () => {
   $(".text-wrap-ex").css("color", this.fontColor.value);
 });
 
-$(document).on('click', '.comment-button', () => {
+const createElement = ({ id, comment, color1, color2, font_color }) => {
+  $(".commentary-container").find(".nothing").hide();
+  $(".commentary-container").append(
+    `<div class="commentary" id="${id}"><div class="commentary-content" style="background-image: linear-gradient(270deg, ${color1} 0%, ${color2} 100%"><p class="text-wrap" style="color: ${font_color}">${comment}</p></div><div class="actions"><img class="sound" src="./assets/img/sound.svg"><img class="edit" src="./assets/img/edit.svg"><img class="delete" src="./assets/img/delete.svg"></div></div>`
+  );
+};
+
+const editElement = ({ id, comment, color1, color2, font_color }) => {
+  $(`#${editingId}`).replaceWith(
+    `<div class="commentary" id="${id}"><div class="commentary-content" style="background-image: linear-gradient(270deg, ${color1} 0%, ${color2} 100%"><p class="text-wrap" style="color: ${font_color}">${comment}</p></div><div class="actions"><img class="sound" src="./assets/img/sound.svg"><img class="edit" src="./assets/img/edit.svg"><img class="delete" src="./assets/img/delete.svg"></div></div>`
+  );
+};
+
+$(document).on("click", ".comment-button", () => {
   const dados = {
     id: (lastId += 1),
     comment: this.comment.value,
@@ -73,22 +75,38 @@ $(document).on('click', '.comment-button', () => {
     method: "POST",
     data: JSON.stringify(dados),
     success: (data) => {
-        createElement(dados);
+      createElement(dados);
     },
     error: (data) => {
-      alertify.error(data.responseJSON.error)
-    }
+      alertify.error(data.responseJSON.error);
+    },
   });
 });
 
 $(document).on("click", ".sound", function () {
-  const text = $(this).closest(".commentary").text();
+  let text = '';
+  const words = $(this).closest(".commentary").text()
+  const textArray = words.split(' ')
+
+  $.ajax({
+    url: `${baseUrl}/badwords`,
+    type: "POST",
+    contentType: "application/json",
+    dataType: "json",
+    data: JSON.stringify(textArray),
+    success: (data) => {
+      text = words
+    },
+    error: (data) => {
+      text = data.responseJSON.status
+    }
+  })
   $.ajax({
     url: `${baseUrl}/comments/speak`,
     type: "GET",
     contentType: "application/json",
     dataType: "json",
-    success: function(data) {
+    success: (data) => {
       const audio = WatsonSpeech.TextToSpeech.synthesize(
         Object.assign(data, {
           text,
@@ -102,34 +120,34 @@ $(document).on("click", ".sound", function () {
   });
 });
 
-$(document).on('click', '.edit', function(){
-
-  const id = $(this).closest(".commentary").attr("id")
-  editingId = id
+$(document).on("click", ".edit", function () {
+  const id = $(this).closest(".commentary").attr("id");
+  editingId = id;
   $.ajax({
     url: `${baseUrl}/comment/${id}`,
-    method: 'GET',
+    method: "GET",
     contentType: "application/json",
     dataType: "json",
     success: (data) => {
-      console.log(data)
-      $('.comment-button').toggleClass('update-comment').removeClass('comment-button')
-      $('.update-comment').text('Atualizar')
-      $("#comment").val(data.comment)
-      $("#firstColor").val(data.color1)
-      $("#secondColor").val(data.color2)
-      $("#fontColor").val(data.font_color)
+      $(".comment-button")
+        .toggleClass("update-comment")
+        .removeClass("comment-button");
+      $(".update-comment").text("Atualizar");
+      $("#comment").val(data.comment);
+      $("#firstColor").val(data.color1);
+      $("#secondColor").val(data.color2);
+      $("#fontColor").val(data.font_color);
       $(".commentary-content-ex").css(
         "background-image",
         `linear-gradient(270deg, ${data.color1} 0%, ${data.color2} 100%`
       );
       $(".text-wrap-ex").css("color", data.font_color);
       $(".text-wrap-ex").html(data.comment);
-    }
-  })
-})
+    },
+  });
+});
 
-$(document).on('click', '.update-comment', function(){
+$(document).on("click", ".update-comment", function () {
   const dados = {
     comment: $("#comment").val(),
     color1: $("#firstColor").val(),
@@ -139,31 +157,30 @@ $(document).on('click', '.update-comment', function(){
 
   $.ajax({
     url: `${baseUrl}/comments/${editingId}`,
-    method: 'PUT',
+    method: "PUT",
     contentType: "application/json",
-    dataType: 'json',
+    dataType: "json",
     data: JSON.stringify(dados),
-    success: data => {
-      editElement(dados)
+    success: (data) => {
+      editElement(dados);
     },
-    error: data => {
-      alertify.error(data.responseJSON.error)
-    }
-  })
-})
+    error: (data) => {
+      alertify.error(data.responseJSON.error);
+    },
+  });
+});
 
 $(document).on("click", ".delete", function () {
   const id = parseInt($(this).closest(".commentary").attr("id"));
-  $(this)
-    .closest(".commentary")
-    .fadeOut(300, function () {
-      $(this).remove();
-    });
   $.ajax({
     url: `${baseUrl}/comments/${id}`,
     method: "DELETE",
     success: () => {
-      console.log("Deletado com sucesso!");
+      $(this)
+        .closest(".commentary")
+        .fadeOut(300, function () {
+          $(this).remove();
+        });
     },
   });
 });
