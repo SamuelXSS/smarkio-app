@@ -77,9 +77,9 @@ input:focus {
 
 header {
   display: flex;
+  flex-direction: row;
   margin: 20px;
-  align-items: center;
-  flex-direction: column;
+  justify-content: center;
 }
 
 .line{
@@ -134,6 +134,15 @@ header {
     padding: 10px;
     cursor: pointer;
     transition: all 0.3s;
+}
+
+.update-comment{
+  background-color: #cbafff;
+  border-radius: 5px;
+  margin-bottom: 60px;
+  padding: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
 }
 
 .comment-button:hover{

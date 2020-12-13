@@ -6,6 +6,7 @@ const firstColor = $("#firstColor").val();
 const secondColor = $("#secondColor").val();
 const fontColor = $("#fontColor").val();
 var lastId = 0;
+var editingId = 0;
 
 $(document).ready(function () {
   $.ajax({
@@ -25,19 +26,24 @@ $(document).ready(function () {
             comment: data[i].comment,
             color1: data[i].color1,
             color2: data[i].color2,
-            fontColor: data[i].font_color,
+            font_color: data[i].font_color,
           });
         }
       }
     },
   });
 });
-const createElement = ({ id, comment, color1, color2, fontColor }) => {
+
+const createElement = ({ id, comment, color1, color2, font_color }) => {
   $(".commentary-container").find(".nothing").hide();
   $(".commentary-container").append(
-    `<div class="commentary" id="${id}"><div class="commentary-content" style="background-image: linear-gradient(270deg, ${color1} 0%, ${color2} 100%"><p class="text-wrap" style="color: ${fontColor}">${comment}</p></div><div class="actions"><img class="sound" src="./assets/img/sound.svg"><img class="edit" src="./assets/img/edit.svg"><img class="delete" src="./assets/img/delete.svg"></div></div>`
+    `<div class="commentary" id="${id}"><div class="commentary-content" style="background-image: linear-gradient(270deg, ${color1} 0%, ${color2} 100%"><p class="text-wrap" style="color: ${font_color}">${comment}</p></div><div class="actions"><img class="sound" src="./assets/img/sound.svg"><img class="edit" src="./assets/img/edit.svg"><img class="delete" src="./assets/img/delete.svg"></div></div>`
   );
 };
+
+const editElement = ({id, comment, color1, color2, font_color}) => {
+  $(`#${editingId}`).replaceWith(`<div class="commentary" id="${id}"><div class="commentary-content" style="background-image: linear-gradient(270deg, ${color1} 0%, ${color2} 100%"><p class="text-wrap" style="color: ${font_color}">${comment}</p></div><div class="actions"><img class="sound" src="./assets/img/sound.svg"><img class="edit" src="./assets/img/edit.svg"><img class="delete" src="./assets/img/delete.svg"></div></div>`)
+}
 
 $("#comment").on("keyup", () => {
   $(".text-wrap-ex").html(this.comment.value);
@@ -51,13 +57,13 @@ $("#firstColor, #secondColor, #fontColor").bind("change paste keyup", () => {
   $(".text-wrap-ex").css("color", this.fontColor.value);
 });
 
-$(".comment-button").on("click", () => {
+$(document).on('click', '.comment-button', () => {
   const dados = {
     id: (lastId += 1),
     comment: this.comment.value,
     color1: this.firstColor.value,
     color2: this.secondColor.value,
-    fontColor: this.fontColor.value,
+    font_color: this.fontColor.value,
   };
 
   $.ajax({
@@ -82,7 +88,7 @@ $(document).on("click", ".sound", function () {
     type: "GET",
     contentType: "application/json",
     dataType: "json",
-    success: function (data) {
+    success: function(data) {
       const audio = WatsonSpeech.TextToSpeech.synthesize(
         Object.assign(data, {
           text,
@@ -95,6 +101,56 @@ $(document).on("click", ".sound", function () {
     },
   });
 });
+
+$(document).on('click', '.edit', function(){
+
+  const id = $(this).closest(".commentary").attr("id")
+  editingId = id
+  $.ajax({
+    url: `${baseUrl}/comment/${id}`,
+    method: 'GET',
+    contentType: "application/json",
+    dataType: "json",
+    success: (data) => {
+      console.log(data)
+      $('.comment-button').toggleClass('update-comment').removeClass('comment-button')
+      $('.update-comment').text('Atualizar')
+      $("#comment").val(data.comment)
+      $("#firstColor").val(data.color1)
+      $("#secondColor").val(data.color2)
+      $("#fontColor").val(data.font_color)
+      $(".commentary-content-ex").css(
+        "background-image",
+        `linear-gradient(270deg, ${data.color1} 0%, ${data.color2} 100%`
+      );
+      $(".text-wrap-ex").css("color", data.font_color);
+      $(".text-wrap-ex").html(data.comment);
+    }
+  })
+})
+
+$(document).on('click', '.update-comment', function(){
+  const dados = {
+    comment: $("#comment").val(),
+    color1: $("#firstColor").val(),
+    color2: $("#secondColor").val(),
+    font_color: $("#fontColor").val(),
+  };
+
+  $.ajax({
+    url: `${baseUrl}/comments/${editingId}`,
+    method: 'PUT',
+    contentType: "application/json",
+    dataType: 'json',
+    data: JSON.stringify(dados),
+    success: data => {
+      editElement(dados)
+    },
+    error: data => {
+      alertify.error(data.responseJSON.error)
+    }
+  })
+})
 
 $(document).on("click", ".delete", function () {
   const id = parseInt($(this).closest(".commentary").attr("id"));
