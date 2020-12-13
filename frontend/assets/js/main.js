@@ -85,7 +85,7 @@ $(document).on("click", ".comment-button", () => {
 
 $(document).on("click", ".sound", function () {
   let text = '';
-  const words = $(this).closest(".commentary").text()
+  const words = $(this).closest(".commentary").text().toLowerCase()
   const textArray = words.split(' ')
 
   $.ajax({
