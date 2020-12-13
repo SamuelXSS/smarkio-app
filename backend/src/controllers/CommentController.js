@@ -22,6 +22,9 @@ module.exports = {
     if (comment == "") {
       return res.status(400).json({ error: "Digite um comentário" });
     }
+    if (comment.length < 5) {
+      return res.status(400).json({ error: "Digite pelo menos 5 letras para comentar!" });
+    }
 
     const create = await Comment.create({
       id,
