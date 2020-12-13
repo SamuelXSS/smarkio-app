@@ -5,7 +5,7 @@ require("dotenv").config();
 module.exports = {
   async show(req, res) {
     const { comment_id } = req.params;
-    
+
     const comment = await Comment.findByPk(comment_id);
 
     return res.json(comment);

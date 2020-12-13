@@ -1,8 +1,11 @@
 const express = require('express')
 
+const SystemController = require('./controllers/SystemController')
 const CommentController = require('./controllers/CommentController')
 
 const routes = express.Router()
+
+routes.post('/badwords', SystemController.badWords)
 
 routes.get('/comments', CommentController.index)
 routes.get('/comment/:comment_id', CommentController.show)
