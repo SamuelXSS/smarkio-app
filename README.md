@@ -1,8 +1,8 @@
 # SMARKIO VOICE!
 
-Smarkio Voice is an app to reproduce your comment with a real voice using IBM TextToSpeech, with a badword filter!
+Smarkio Voice is an app to reproduce whatever you texts in a voice using IBM TextToSpeech, with a badword filter feature!
 
-The project was done with **NodeJS** (Backend API REST) , **JQuery** (frontend) and **MySQL** (database).
+The project was made with **NodeJS** (Backend API REST) , **JQuery** (frontend) and **MySQL** (database).
 
 # Getting Started
 
@@ -18,5 +18,5 @@ If you're using VsCode, you can run the `index.html` file, located at frontend f
 
 The project contains the best treats from the API, with their respective status.
 
-Contains the entire **CRUD** of comments and a **bad word filter**, where, if found, our Robot reproduces a message saying it is an inappropriate word.
+Contains the entire **CRUD** of comments and a **bad word filter**, where, if found, the Robot reproduces a message saying it is an inappropriate word.
 
